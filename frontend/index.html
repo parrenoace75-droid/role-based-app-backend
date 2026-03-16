@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Full-Stack App Ace Stefan T. Parreño</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<style>
+  body {
+    background: #fff;
+    color: #212529;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 1rem;
+  }
+
+  /* ── Navbar ── */
+  .app-navbar {
+    background-color: #212529;
+    padding: .75rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .app-navbar .brand {
+    color: #fff; font-size: 1.1rem; font-weight: 500;
+    text-decoration: none; cursor: pointer;
+  }
+  .nav-links { display: flex; align-items: center; gap: .1rem; }
+  .nav-link-btn {
+    background: transparent; border: none;
+    color: rgba(255,255,255,.75); font-size: .95rem;
+    padding: .4rem .8rem; cursor: pointer; border-radius: 4px;
+    transition: color .15s; font-family: inherit;
+  }
+  .nav-link-btn:hover { color: #fff; }
+
+  .nav-dropdown { position: relative; }
+  .nav-dd-toggle {
+    background: transparent; border: none;
+    color: rgba(255,255,255,.75); font-size: .95rem;
+    padding: .4rem .8rem; cursor: pointer; display: flex;
+    align-items: center; gap: .4rem; font-family: inherit;
+  }
+  .nav-dd-toggle:hover { color: #fff; }
+  .nav-dd-toggle::after {
+    content: '';
+    border: solid currentColor;
+    border-width: 0 1.5px 1.5px 0;
+    display: inline-block; padding: 3px;
+    transform: rotate(45deg); margin-top: -3px;
+  }
+  .nav-dd-menu {
+    position: absolute; right: 0; top: calc(100% + 4px);
+    background: #fff; border: 1px solid rgba(0,0,0,.15);
+    border-radius: .375rem; min-width: 190px;
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+    display: none; z-index: 1000; overflow: hidden;
+  }
+  .nav-dd-menu.show { display: block; }
+  .nav-dd-item {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    width: 100%; padding: .5rem 1rem;
+    font-size: .9rem; color: #212529;
+    background: transparent; border: none;
+    text-align: left; cursor: pointer; transition: background .1s;
+    font-family: inherit;
+  }
+  .nav-dd-item:hover { background: #f8f9fa; }
+  .nav-dd-item.danger { color: #dc3545; }
+  .nav-dd-item.danger:hover { background: #fff5f5; }
+  .dd-divider { height: 1px; background: #e9ecef; margin: .25rem 0; }
+  .admin-pill {
+    font-size: .67rem; background: #6f42c1; color: #fff;
+    padding: .1rem .35rem; border-radius: 3px; margin-left: .4rem;
+  }
+
+  /* ── Pages ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── Home ── */
+  .home-wrap { padding: 2.5rem 1rem 3rem; max-width: 680px; }
+  .home-wrap h1 { font-size: 2rem; font-weight: 700; margin-bottom: .5rem; }
+  .home-wrap .lead-p { font-size: 1rem; margin-bottom: 1rem; }
+  .home-wrap ul { margin-bottom: 1.25rem; padding-left: 1.25rem; }
+  .home-wrap ul li { margin-bottom: .25rem; font-size: .97rem; }
+  .note-box {
+    background: #cff4fc; border: 1px solid #9eeaf9;
+    border-radius: .375rem; padding: .75rem 1rem;
+    font-size: .9rem; color: #055160; margin-bottom: 1.5rem;
+  }
+  .note-box code { color: #0a58ca; background: transparent; font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+  .btn-get-started {
+    background: #0d6efd; color: #fff; border: 1px solid #0d6efd;
+    padding: .45rem 1.1rem; font-size: .97rem; border-radius: .375rem;
+    cursor: pointer; font-family: inherit; transition: background .15s;
+  }
+  .btn-get-started:hover { background: #0b5ed7; }
+
+  /* ── Dashboard ── */
+  .dash-wrap { padding: 1.75rem 1rem; max-width: 1100px; margin: 0 auto; }
+  .sec-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.25rem; padding-bottom: .75rem;
+    border-bottom: 1px solid #dee2e6;
+  }
+  .sec-head h4 { margin: 0; font-weight: 600; font-size: 1.25rem; }
+
+  /* Tabs */
+  .tab-nav {
+    display: flex; border-bottom: 1px solid #dee2e6;
+    margin-bottom: 1.5rem; overflow-x: auto; scrollbar-width: none;
+  }
+  .tab-nav::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    padding: .5rem 1rem; font-size: .9rem; color: #6c757d;
+    background: transparent; border: 1px solid transparent;
+    border-bottom: none; cursor: pointer; margin-bottom: -1px;
+    border-radius: .375rem .375rem 0 0; white-space: nowrap;
+    transition: color .15s; font-family: inherit;
+  }
+  .tab-btn:hover { color: #495057; border-color: #e9ecef #e9ecef #dee2e6; background: #f8f9fa; }
+  .tab-btn.active { color: #212529; background: #fff; border-color: #dee2e6 #dee2e6 #fff; }
+
+  /* Profile */
+  .profile-card {
+    border: 1px solid #dee2e6; border-radius: .5rem;
+    padding: 1.5rem; background: #fff;
+  }
+  .profile-avatar {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: #0d6efd; color: #fff; font-size: 1.3rem;
+    font-weight: 700; display: flex; align-items: center;
+    justify-content: center; margin-bottom: .9rem;
+  }
+  .profile-name { font-size: 1.1rem; font-weight: 600; margin-bottom: .2rem; }
+  .profile-email { color: #6c757d; font-size: .875rem; margin-bottom: .5rem; }
+  .role-badge {
+    display: inline-block; padding: .2rem .55rem;
+    border-radius: .25rem; font-size: .78rem; font-weight: 600; color: #fff;
+  }
+  .role-badge.admin { background: #6f42c1; }
+  .role-badge.user  { background: #0d6efd; }
+  .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  /* Table */
+  .tbl-wrap { border: 1px solid #dee2e6; border-radius: .5rem; overflow: hidden; }
+  .tbl-scroll { overflow-x: auto; }
+  table.ctbl { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  table.ctbl th {
+    padding: .65rem .9rem; background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6; font-weight: 600;
+    text-align: left; color: #495057; white-space: nowrap;
+  }
+  table.ctbl td {
+    padding: .65rem .9rem; border-bottom: 1px solid #f1f3f5;
+    vertical-align: middle;
+  }
+  table.ctbl tbody tr:last-child td { border-bottom: none; }
+  table.ctbl tbody tr:hover td { background: #f8f9fa; }
+  table.ctbl .erow td { text-align: center; color: #6c757d; padding: 2rem; }
+
+  /* Status badges */
+  .sbadge {
+    display: inline-block; padding: .2rem .5rem;
+    border-radius: .25rem; font-size: .75rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .03em;
+  }
+  .sbadge.pending   { background: #fff3cd; color: #664d03; border: 1px solid #ffecb5; }
+  .sbadge.approved  { background: #d1e7dd; color: #0a3622; border: 1px solid #badbcc; }
+  .sbadge.rejected  { background: #f8d7da; color: #58151c; border: 1px solid #f5c2c7; }
+  .sbadge.verified  { background: #d1e7dd; color: #0a3622; border: 1px solid #badbcc; }
+  .sbadge.unverified{ background: #e2e3e5; color: #41464b; border: 1px solid #d3d6d8; }
+
+  /* Form panel */
+  .form-panel {
+    background: #f8f9fa; border: 1px solid #dee2e6;
+    border-radius: .5rem; padding: 1.25rem; margin-top: 1rem; display: none;
+  }
+  .form-panel.open { display: block; }
+  .fpanel-title { font-weight: 600; font-size: 1rem; margin-bottom: 1rem; }
+
+  /* Form controls */
+  .fc {
+    display: block; width: 100%;
+    padding: .375rem .75rem; font-size: .9rem;
+    color: #212529; background: #fff;
+    border: 1px solid #ced4da; border-radius: .375rem;
+    outline: none; transition: border-color .15s, box-shadow .15s;
+    font-family: inherit;
+  }
+  .fc:focus { border-color: #86b7fe; box-shadow: 0 0 0 .25rem rgba(13,110,253,.25); }
+  .fc::placeholder { color: #adb5bd; }
+  select.fc option { background: #fff; }
+  label.fl { display: block; font-size: .875rem; font-weight: 500; margin-bottom: .35rem; }
+  .fmb { margin-bottom: .85rem; }
+  .frow2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .375rem .75rem; font-size: .875rem;
+    border-radius: .375rem; border: 1px solid transparent;
+    cursor: pointer; font-family: inherit; font-weight: 400;
+    transition: background .15s, border-color .15s, color .15s;
+    line-height: 1.5;
+  }
+  .btn-primary   { background:#0d6efd; border-color:#0d6efd; color:#fff; }
+  .btn-primary:hover  { background:#0b5ed7; border-color:#0a58ca; }
+  .btn-success   { background:#198754; border-color:#198754; color:#fff; }
+  .btn-success:hover  { background:#157347; }
+  .btn-secondary { background:#6c757d; border-color:#6c757d; color:#fff; }
+  .btn-secondary:hover{ background:#5c636a; }
+  .btn-danger    { background:#dc3545; border-color:#dc3545; color:#fff; }
+  .btn-danger:hover   { background:#bb2d3b; }
+  .btn-warning   { background:#ffc107; border-color:#ffc107; color:#000; }
+  .btn-warning:hover  { background:#ffca2c; }
+  .btn-outline   { background:transparent; border-color:#ced4da; color:#212529; }
+  .btn-outline:hover  { background:#f8f9fa; }
+  .btn-sm { padding:.25rem .55rem; font-size:.8rem; }
+
+  /* Alert */
+  .alert { padding:.65rem 1rem; border-radius:.375rem; font-size:.875rem; margin-bottom:.75rem; display:none; }
+  .alert.show { display:block; }
+  .alert-danger  { background:#f8d7da; border:1px solid #f5c2c7; color:#842029; }
+  .alert-success { background:#d1e7dd; border:1px solid #badbcc; color:#0a3622; }
+  .alert-info    { background:#cff4fc; border:1px solid #9eeaf9; color:#055160; }
+
+  /* Modals */
+  .modal-backdrop {
+    position:fixed; inset:0; background:rgba(0,0,0,.5);
+    z-index:1040; display:none; align-items:center; justify-content:center;
+  }
+  .modal-backdrop.show { display:flex; }
+  .modal-dlg {
+    background:#fff; border-radius:.5rem; width:100%;
+    max-height:92vh; overflow-y:auto;
+    box-shadow:0 .5rem 1rem rgba(0,0,0,.15);
+    animation: mslide .2s ease;
+  }
+  @keyframes mslide { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+  .modal-hdr {
+    padding:1rem 1.25rem; border-bottom:1px solid #dee2e6;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .modal-title { font-size:1.1rem; font-weight:600; margin:0; }
+  .modal-x {
+    background:transparent; border:none; font-size:1.4rem;
+    line-height:1; color:#6c757d; cursor:pointer; padding:0 .25rem;
+  }
+  .modal-x:hover { color:#212529; }
+  .modal-bdy { padding:1.25rem; }
+  .modal-ftr {
+    padding:.75rem 1.25rem; border-top:1px solid #dee2e6;
+    display:flex; justify-content:flex-end; gap:.5rem;
+  }
+
+  /* Welcome options */
+  .welcome-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:.5rem; }
+  .welcome-opt {
+    border:1px solid #dee2e6; border-radius:.5rem;
+    padding:1.5rem 1rem; text-align:center;
+    cursor:pointer; transition:border-color .15s, background .15s; background:#fff;
+  }
+  .welcome-opt:hover { border-color:#0d6efd; background:#f0f5ff; }
+  .welcome-opt .wicon { font-size:2rem; margin-bottom:.6rem; }
+  .welcome-opt .wtitle { font-weight:600; font-size:.97rem; }
+  .welcome-opt .wsub { font-size:.82rem; color:#6c757d; margin-top:.2rem; }
+
+  /* Request items */
+  .req-row { display:grid; grid-template-columns:1fr 80px 34px; gap:.4rem; margin-bottom:.4rem; align-items:center; }
+  .req-rm {
+    width:32px; height:32px; border:1px solid #dee2e6;
+    background:#fff; border-radius:.375rem; cursor:pointer;
+    font-size:1.1rem; color:#6c757d;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .req-rm:hover { background:#f8d7da; border-color:#f5c2c7; color:#dc3545; }
+
+  /* Toast */
+  #toasts {
+    position:fixed; top:1rem; right:1rem;
+    z-index:9999; display:flex; flex-direction:column; gap:.4rem;
+  }
+  .titem {
+    padding:.65rem 1rem; border-radius:.375rem;
+    font-size:.875rem; min-width:230px;
+    box-shadow:0 .25rem .75rem rgba(0,0,0,.1);
+    animation:tin .2s ease; font-family:inherit;
+  }
+  @keyframes tin { from{opacity:0;transform:translateX(10px)} }
+  .titem.success { background:#d1e7dd; border:1px solid #badbcc; color:#0a3622; }
+  .titem.error   { background:#f8d7da; border:1px solid #f5c2c7; color:#842029; }
+  .titem.info    { background:#cff4fc; border:1px solid #9eeaf9; color:#055160; }
+  .titem.warning { background:#fff3cd; border:1px solid #ffecb5; color:#664d03; }
+
+  /* Misc */
+  .text-muted { color:#6c757d !important; }
+  .small { font-size:.82rem; }
+  .mr2 { margin-right:.3rem; }
+
+  @media(max-width:576px) {
+    .frow2 { grid-template-columns:1fr; }
+    .welcome-grid { grid-template-columns:1fr; }
+    .profile-grid { grid-template-columns:1fr; }
+    .modal-dlg { max-width:calc(100vw - 1.5rem); margin:0 auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="app-navbar">
+  <span class="brand" onclick="goHome()">Full-Stack App Ace Stefan T. Parreño</span>
+  <div class="nav-links" id="nav-links"></div>
+</nav>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <div class="container">
+    <div class="home-wrap">
+      <h1>Welcome to Full-Stack App</h1>
+      <p class="lead-p">A static prototype before backend integration. Simulates:</p>
+      <ul>
+        <li>Email registration + fake verification</li>
+        <li>Login with JWT-like token simulation</li>
+        <li>Role-based UI (Admin/User)</li>
+        <li>CRUD for Employees, Departments, Requests</li>
+      </ul>
+      <div class="note-box">
+        ⚠️ <strong>Note:</strong> All data is stored in <code>localStorage</code>. Refresh to reset.
+      </div>
+      <button class="btn-get-started" onclick="openModal('modal-welcome')">Get Started →</button>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page">
+  <div class="dash-wrap">
+    <div class="tab-nav" id="tab-nav"></div>
+    <div id="tab-body"></div>
+  </div>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Welcome -->
+<div class="modal-backdrop" id="modal-welcome">
+  <div class="modal-dlg" style="max-width:440px;">
+    <div class="modal-hdr">
+      <h5 class="modal-title">Get Started</h5>
+      <button class="modal-x" onclick="closeModal('modal-welcome')">×</button>
+    </div>
+    <div class="modal-bdy">
+      <p class="text-muted small" style="margin-bottom:.75rem;">Choose how you'd like to continue:</p>
+      <div class="welcome-grid">
+        <div class="welcome-opt" onclick="closeModal('modal-welcome');openModal('modal-register')">
+          <div class="wicon">📝</div>
+          <div class="wtitle">Register</div>
+          <div class="wsub">Create a new account</div>
+        </div>
+        <div class="welcome-opt" onclick="closeModal('modal-welcome');openModal('modal-login')">
+          <div class="wicon">🔑</div>
+          <div class="wtitle">Login</div>
+          <div class="wsub">Sign in to your account</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Register -->
+<div class="modal-backdrop" id="modal-register">
+  <div class="modal-dlg" style="max-width:460px;">
+    <div class="modal-hdr">
+      <h5 class="modal-title">Register Account</h5>
+      <button class="modal-x" onclick="closeModal('modal-register')">×</button>
+    </div>
+    <div class="modal-bdy">
+      <div class="alert alert-danger" id="reg-err"></div>
+      <div class="frow2">
+        <div class="fmb"><label class="fl">First Name</label><input type="text" id="reg-fn" class="fc" placeholder="John"/></div>
+        <div class="fmb"><label class="fl">Last Name</label><input type="text" id="reg-ln" class="fc" placeholder="Doe"/></div>
+      </div>
+      <div class="fmb"><label class="fl">Email</label><input type="email" id="reg-email" class="fc" placeholder="john@example.com"/></div>
+      <div class="fmb"><label class="fl">Password <span class="text-muted small">(min 6 chars)</span></label>
+        <input type="password" id="reg-pw" class="fc" placeholder="••••••"/></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-secondary" onclick="closeModal('modal-register')">Cancel</button>
+      <button class="btn btn-primary" onclick="doRegister()">Sign Up</button>
+    </div>
+    <div style="padding:.6rem 1.25rem;border-top:1px solid #dee2e6;font-size:.82rem;color:#6c757d;text-align:center;">
+      Already have an account? <a href="#" style="color:#0d6efd;" onclick="closeModal('modal-register');openModal('modal-login');return false;">Login</a>
+    </div>
+  </div>
+</div>
+
+<!-- Verify Email -->
+<div class="modal-backdrop" id="modal-verify">
+  <div class="modal-dlg" style="max-width:420px;">
+    <div class="modal-hdr"><h5 class="modal-title">Verify Your Email</h5></div>
+    <div class="modal-bdy" style="text-align:center;padding:2rem 1.5rem;">
+      <div style="font-size:2.5rem;margin-bottom:1rem;">📧</div>
+      <p style="font-weight:600;font-size:1rem;margin-bottom:.4rem;">Check your inbox</p>
+      <p class="text-muted small" style="margin-bottom:1.25rem;">
+        A verification link has been sent to <strong id="verify-lbl" style="color:#0d6efd;"></strong>
+      </p>
+      <div class="alert alert-info show" style="text-align:left;font-size:.84rem;">
+        🎭 <strong>Demo:</strong> Click below to instantly simulate email verification.
+      </div>
+      <button class="btn btn-success" style="width:100%;margin-top:.5rem;justify-content:center;" onclick="doVerify()">✅ Simulate Email Verification</button>
+      <button class="btn btn-outline" style="width:100%;margin-top:.5rem;justify-content:center;" onclick="closeModal('modal-verify');openModal('modal-login')">Go to Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- Login -->
+<div class="modal-backdrop" id="modal-login">
+  <div class="modal-dlg" style="max-width:420px;">
+    <div class="modal-hdr">
+      <h5 class="modal-title">Login</h5>
+      <button class="modal-x" onclick="closeModal('modal-login')">×</button>
+    </div>
+    <div class="modal-bdy">
+      <div class="alert alert-danger" id="login-err"></div>
+      <div class="fmb"><label class="fl">Email</label><input type="email" id="login-email" class="fc" placeholder="admin@example.com"/></div>
+      <div class="fmb"><label class="fl">Password</label><input type="password" id="login-pw" class="fc" placeholder="Password"/></div>
+      <p class="text-muted small">
+        Demo admin: <code>admin@example.com</code> / <code>admin123</code><br/>
+        Demo user: <code>alice@example.com</code> / <code>user123</code>
+      </p>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-secondary" onclick="closeModal('modal-login')">Cancel</button>
+      <button class="btn btn-primary" onclick="doLogin()">Login</button>
+    </div>
+    <div style="padding:.6rem 1.25rem;border-top:1px solid #dee2e6;font-size:.82rem;color:#6c757d;text-align:center;">
+      No account? <a href="#" style="color:#0d6efd;" onclick="closeModal('modal-login');openModal('modal-register');return false;">Register</a>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Profile -->
+<div class="modal-backdrop" id="modal-edit-profile">
+  <div class="modal-dlg" style="max-width:420px;">
+    <div class="modal-hdr">
+      <h5 class="modal-title">Edit Profile</h5>
+      <button class="modal-x" onclick="closeModal('modal-edit-profile')">×</button>
+    </div>
+    <div class="modal-bdy">
+      <div class="alert alert-danger" id="ep-err"></div>
+      <div class="frow2">
+        <div class="fmb"><label class="fl">First Name</label><input type="text" id="ep-fn" class="fc"/></div>
+        <div class="fmb"><label class="fl">Last Name</label><input type="text" id="ep-ln" class="fc"/></div>
+      </div>
+      <div class="fmb">
+        <label class="fl">New Password <span class="text-muted small">(leave blank to keep)</span></label>
+        <input type="password" id="ep-pw" class="fc" placeholder="••••••"/>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-secondary" onclick="closeModal('modal-edit-profile')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEditProfile()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Request -->
+<div class="modal-backdrop" id="modal-request">
+  <div class="modal-dlg" style="max-width:500px;">
+    <div class="modal-hdr">
+      <h5 class="modal-title">New Request</h5>
+      <button class="modal-x" onclick="closeModal('modal-request')">×</button>
+    </div>
+    <div class="modal-bdy">
+      <div class="alert alert-danger" id="req-err"></div>
+      <div class="fmb"><label class="fl">Type</label>
+        <select id="req-type" class="fc"><option>Equipment</option><option>Leave</option><option>Resources</option><option>Other</option></select>
+      </div>
+      <div class="fmb">
+        <label class="fl">Items</label>
+        <div id="req-items-wrap"></div>
+        <button class="btn btn-outline btn-sm" style="margin-top:.4rem;" onclick="addReqItem()">+ Add Item</button>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-secondary" onclick="closeModal('modal-request')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitRequest()">Submit Request</button>
+    </div>
+  </div>
+</div>
+
+<!-- Update Request Status -->
+<div class="modal-backdrop" id="modal-rstat">
+  <div class="modal-dlg" style="max-width:360px;">
+    <div class="modal-hdr">
+      <h5 class="modal-title">Update Status</h5>
+      <button class="modal-x" onclick="closeModal('modal-rstat')">×</button>
+    </div>
+    <div class="modal-bdy">
+      <p class="text-muted small" style="margin-bottom:.75rem;">Request: <strong id="rstat-id"></strong></p>
+      <div class="fmb"><label class="fl">Status</label>
+        <select id="rstat-val" class="fc"><option>Pending</option><option>Approved</option><option>Rejected</option></select>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-secondary" onclick="closeModal('modal-rstat')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveRstat()">Update</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+const SK = 'fsa_light_v2';
+let currentUser = null, activeTab = 'profile';
+let empTgt=null, deptTgt=null, accTgt=null, rstatTgt=null;
+
+// ── DB ─────────────────────────────────────────────────
+function loadDB(){
+  try{ const r=localStorage.getItem(SK); if(r){window.db=JSON.parse(r);return;} }catch(e){}
+  seedDB();
+}
+function saveDB(){ localStorage.setItem(SK,JSON.stringify(window.db)); }
+function seedDB(){
+  window.db={
+    accounts:[
+      {id:'a1',firstName:'Admin',lastName:'User',email:'admin@example.com',password:'admin123',role:'Admin',verified:true},
+      {id:'a2',firstName:'Alice',lastName:'User',email:'alice@example.com',password:'user123',role:'User',verified:true}
+    ],
+    departments:[
+      {id:'d1',name:'Engineering',description:'Software team'},
+      {id:'d2',name:'HR',description:'Human Resources'}
+    ],
+    employees:[], requests:[]
+  };
+  saveDB();
+}
+
+// ── Auth ───────────────────────────────────────────────
+function setAuth(isAuth,user=null){
+  currentUser=user; renderNav();
+  if(isAuth){ showPage('page-dashboard'); renderDash(); }
+  else showPage('page-home');
+}
+function restoreSession(){
+  const token=sessionStorage.getItem('authToken');
+  const savedUser=sessionStorage.getItem('currentUser');
+  if(token && savedUser){
+    try{
+      const user=JSON.parse(savedUser);
+      // Re-fetch from local DB to get full user object (firstName, lastName, role etc.)
+      const dbUser=window.db.accounts.find(a=>a.email===user.email);
+      if(dbUser){ currentUser=dbUser; renderNav(); showPage('page-dashboard'); renderDash(); }
+    }catch(e){ sessionStorage.clear(); }
+  }
+}
+
+// ── Nav ────────────────────────────────────────────────
+function renderNav(){
+  const el=document.getElementById('nav-links');
+  if(!currentUser){
+    el.innerHTML=`
+      <button class="nav-link-btn" onclick="openModal('modal-login')">Login</button>
+      <button class="nav-link-btn" onclick="openModal('modal-register')">Register</button>`;
+  } else {
+    const isAdmin=currentUser.role==='Admin';
+    el.innerHTML=`
+      <div class="nav-dropdown" id="nd">
+        <button class="nav-dd-toggle" onclick="toggleDD()">${esc(currentUser.firstName)} ${esc(currentUser.lastName)}</button>
+        <div class="nav-dd-menu" id="nd-menu">
+          <button class="nav-dd-item" onclick="goTab('profile')">👤 Profile</button>
+          ${isAdmin?`
+          <button class="nav-dd-item" onclick="goTab('employees')">Employees <span class="admin-pill">Admin</span></button>
+          <button class="nav-dd-item" onclick="goTab('accounts')">Accounts <span class="admin-pill">Admin</span></button>
+          <button class="nav-dd-item" onclick="goTab('departments')">Departments <span class="admin-pill">Admin</span></button>
+          <button class="nav-dd-item" onclick="goTab('all-requests')">All Requests <span class="admin-pill">Admin</span></button>`:''}
+          <button class="nav-dd-item" onclick="goTab('requests')">My Requests</button>
+          <div class="dd-divider"></div>
+          <button class="nav-dd-item danger" onclick="doLogout()">Logout</button>
+        </div>
+      </div>`;
+  }
+}
+function toggleDD(){ document.getElementById('nd-menu')?.classList.toggle('show'); }
+function closeDD()  { document.getElementById('nd-menu')?.classList.remove('show'); }
+document.addEventListener('click',e=>{ if(!e.target.closest('#nd')) closeDD(); });
+
+function goHome(){ currentUser?( showPage('page-dashboard'), renderDash() ):showPage('page-home'); }
+function showPage(id){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function goTab(tab){ closeDD(); activeTab=tab; showPage('page-dashboard'); renderDash(); }
+
+// ── Dashboard ──────────────────────────────────────────
+function renderDash(){
+  const isAdmin=currentUser?.role==='Admin';
+  const tabs=[
+    {id:'profile',label:'Profile'},
+    ...(isAdmin?[
+      {id:'employees',label:'Employees'},
+      {id:'accounts',label:'Accounts'},
+      {id:'departments',label:'Departments'},
+      {id:'all-requests',label:'All Requests'},
+    ]:[]),
+    {id:'requests',label:'My Requests'},
+  ];
+  document.getElementById('tab-nav').innerHTML=
+    tabs.map(t=>`<button class="tab-btn ${activeTab===t.id?'active':''}" onclick="switchTab('${t.id}')">${t.label}</button>`).join('');
+  renderTabBody();
+}
+function switchTab(id){
+  activeTab=id;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.getAttribute('onclick').includes(`'${id}'`)));
+  renderTabBody();
+}
+function renderTabBody(){
+  const el=document.getElementById('tab-body');
+  switch(activeTab){
+    case 'profile':      el.innerHTML=buildProfile(); break;
+    case 'employees':    el.innerHTML=buildEmployees(); break;
+    case 'accounts':     el.innerHTML=buildAccounts(); break;
+    case 'departments':  el.innerHTML=buildDepts(); break;
+    case 'requests':     el.innerHTML=buildMyReqs(); break;
+    case 'all-requests': el.innerHTML=buildAllReqs(); break;
+  }
+}
+
+// ── Profile ────────────────────────────────────────────
+function buildProfile(){
+  const u=currentUser;
+  const emp=window.db.employees.find(e=>e.userEmail===u.email);
+  const dept=emp?window.db.departments.find(d=>d.id===emp.deptId):null;
+  const ini=(u.firstName[0]||'')+(u.lastName[0]||'');
+  return `
+    <div class="sec-head"><h4>My Profile</h4>
+      <button class="btn btn-outline btn-sm" onclick="openEditProfile()">Edit Profile</button>
+    </div>
+    <div class="profile-grid">
+      <div class="profile-card">
+        <div class="profile-avatar">${esc(ini)}</div>
+        <div class="profile-name">${esc(u.firstName)} ${esc(u.lastName)}</div>
+        <div class="profile-email">${esc(u.email)}</div>
+        <span class="role-badge ${u.role==='Admin'?'admin':'user'}">${u.role}</span>
+      </div>
+      <div class="profile-card">
+        <div style="font-weight:600;margin-bottom:.75rem;">Employee Record</div>
+        ${emp?`
+          <table style="font-size:.88rem;width:100%;border-collapse:collapse;">
+            <tr><td style="color:#6c757d;padding:.3rem .5rem .3rem 0;width:110px;">Employee ID</td><td>${esc(emp.empId)}</td></tr>
+            <tr><td style="color:#6c757d;padding:.3rem .5rem .3rem 0;">Position</td><td>${esc(emp.position)}</td></tr>
+            <tr><td style="color:#6c757d;padding:.3rem .5rem .3rem 0;">Department</td><td>${dept?esc(dept.name):'—'}</td></tr>
+            <tr><td style="color:#6c757d;padding:.3rem .5rem .3rem 0;">Hire Date</td><td>${esc(emp.hireDate||'—')}</td></tr>
+          </table>`
+        :`<p class="text-muted small">No employee record linked to this account.</p>`}
+      </div>
+    </div>`;
+}
+function openEditProfile(){
+  document.getElementById('ep-fn').value=currentUser.firstName;
+  document.getElementById('ep-ln').value=currentUser.lastName;
+  document.getElementById('ep-pw').value='';
+  halert('ep-err'); openModal('modal-edit-profile');
+}
+function saveEditProfile(){
+  const fn=v('ep-fn'),ln=v('ep-ln'),pw=document.getElementById('ep-pw').value;
+  if(!fn||!ln){salert('ep-err','danger','Name fields are required.');return;}
+  if(pw&&pw.length<6){salert('ep-err','danger','Password must be at least 6 characters.');return;}
+  const acc=window.db.accounts.find(a=>a.email===currentUser.email);
+  acc.firstName=fn; acc.lastName=ln; if(pw) acc.password=pw;
+  currentUser.firstName=fn; currentUser.lastName=ln;
+  saveDB(); closeModal('modal-edit-profile'); renderNav(); renderTabBody(); toast('Profile updated.','success');
+}
+
+// ── Employees ──────────────────────────────────────────
+function buildEmployees(){
+  const dOpts=window.db.departments.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');
+  const rows=window.db.employees.length
+    ?window.db.employees.map(e=>{
+        const dept=window.db.departments.find(d=>d.id===e.deptId);
+        return`<tr>
+          <td>${esc(e.empId)}</td><td>${esc(e.userEmail)}</td>
+          <td>${esc(e.position)}</td><td>${dept?esc(dept.name):'—'}</td>
+          <td>${esc(e.hireDate||'—')}</td>
+          <td>
+            <button class="btn btn-outline btn-sm mr2" onclick="openEmpForm('${e.id}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteEmp('${e.id}')">Delete</button>
+          </td></tr>`;}).join('')
+    :`<tr class="erow"><td colspan="6">No employees yet.</td></tr>`;
+  return`
+    <div class="sec-head"><h4>Employees</h4>
+      <button class="btn btn-success btn-sm" onclick="openEmpForm(null)">+ Add Employee</button></div>
+    <div class="tbl-wrap"><div class="tbl-scroll">
+      <table class="ctbl"><thead><tr><th>ID</th><th>Email</th><th>Position</th><th>Dept</th><th>Hire Date</th><th>Actions</th></tr></thead>
+      <tbody>${rows}</tbody></table></div></div>
+    <div class="form-panel" id="emp-panel">
+      <div class="fpanel-title" id="emp-ptitle">Add Employee</div>
+      <div class="alert alert-danger" id="emp-err"></div>
+      <div class="frow2">
+        <div class="fmb"><label class="fl">Employee ID</label><input type="text" id="ef-eid" class="fc" placeholder="EMP001"/></div>
+        <div class="fmb"><label class="fl">User Email</label><input type="email" id="ef-email" class="fc"/></div>
+      </div>
+      <div class="frow2">
+        <div class="fmb"><label class="fl">Position</label><input type="text" id="ef-pos" class="fc"/></div>
+        <div class="fmb"><label class="fl">Department</label><select id="ef-dept" class="fc">${dOpts}</select></div>
+      </div>
+      <div class="fmb"><label class="fl">Hire Date</label><input type="date" id="ef-date" class="fc"/></div>
+      <div style="display:flex;gap:.5rem;">
+        <button class="btn btn-primary" onclick="saveEmp()">Save</button>
+        <button class="btn btn-secondary" onclick="closePanel('emp-panel')">Cancel</button>
+      </div></div>`;
+}
+function openEmpForm(id){
+  empTgt=id;
+  openPanel('emp-panel'); halert('emp-err');
+  if(id){
+    const e=window.db.employees.find(x=>x.id===id);
+    document.getElementById('emp-ptitle').textContent='Edit Employee';
+    document.getElementById('ef-eid').value=e.empId;
+    document.getElementById('ef-email').value=e.userEmail;
+    document.getElementById('ef-pos').value=e.position;
+    document.getElementById('ef-dept').value=e.deptId;
+    document.getElementById('ef-date').value=e.hireDate||'';
+  } else {
+    document.getElementById('emp-ptitle').textContent='Add Employee';
+    ['ef-eid','ef-email','ef-pos','ef-date'].forEach(x=>document.getElementById(x).value='');
+  }
+}
+function saveEmp(){
+  const empId=v('ef-eid'),email=document.getElementById('ef-email').value.trim().toLowerCase(),
+        position=v('ef-pos'),deptId=document.getElementById('ef-dept').value,hireDate=v('ef-date');
+  if(!empId||!email||!position){salert('emp-err','danger','Employee ID, email and position are required.');return;}
+  if(!window.db.accounts.find(a=>a.email===email)){salert('emp-err','danger','No account with that email.');return;}
+  if(empTgt) Object.assign(window.db.employees.find(e=>e.id===empTgt),{empId,userEmail:email,position,deptId,hireDate});
+  else window.db.employees.push({id:'e'+Date.now(),empId,userEmail:email,position,deptId,hireDate});
+  saveDB(); closePanel('emp-panel'); renderTabBody(); toast('Employee saved.','success');
+}
+function deleteEmp(id){
+  if(!confirm('Delete this employee?'))return;
+  window.db.employees=window.db.employees.filter(e=>e.id!==id);
+  saveDB(); renderTabBody(); toast('Employee deleted.','warning');
+}
+
+// ── Departments ─────────────────────────────────────────
+function buildDepts(){
+  const rows=window.db.departments.length
+    ?window.db.departments.map(d=>`<tr>
+        <td>${esc(d.name)}</td><td>${esc(d.description)}</td>
+        <td>
+          <button class="btn btn-outline btn-sm mr2" onclick="openDeptForm('${d.id}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteDept('${d.id}')">Delete</button>
+        </td></tr>`).join('')
+    :`<tr class="erow"><td colspan="3">No departments yet.</td></tr>`;
+  return`
+    <div class="sec-head"><h4>Departments</h4>
+      <button class="btn btn-success btn-sm" onclick="openDeptForm(null)">+ Add Department</button></div>
+    <div class="tbl-wrap"><div class="tbl-scroll">
+      <table class="ctbl"><thead><tr><th>Name</th><th>Description</th><th>Actions</th></tr></thead>
+      <tbody>${rows}</tbody></table></div></div>
+    <div class="form-panel" id="dept-panel">
+      <div class="fpanel-title" id="dept-ptitle">Add Department</div>
+      <div class="alert alert-danger" id="dept-err"></div>
+      <div class="fmb"><label class="fl">Name</label><input type="text" id="df-name" class="fc" placeholder="Engineering"/></div>
+      <div class="fmb"><label class="fl">Description</label><input type="text" id="df-desc" class="fc"/></div>
+      <div style="display:flex;gap:.5rem;">
+        <button class="btn btn-primary" onclick="saveDept()">Save</button>
+        <button class="btn btn-secondary" onclick="closePanel('dept-panel')">Cancel</button>
+      </div></div>`;
+}
+function openDeptForm(id){
+  deptTgt=id; openPanel('dept-panel'); halert('dept-err');
+  if(id){
+    const d=window.db.departments.find(x=>x.id===id);
+    document.getElementById('dept-ptitle').textContent='Edit Department';
+    document.getElementById('df-name').value=d.name;
+    document.getElementById('df-desc').value=d.description;
+  } else {
+    document.getElementById('dept-ptitle').textContent='Add Department';
+    ['df-name','df-desc'].forEach(x=>document.getElementById(x).value='');
+  }
+}
+function saveDept(){
+  const name=v('df-name'),desc=v('df-desc');
+  if(!name){salert('dept-err','danger','Name is required.');return;}
+  if(deptTgt){ const d=window.db.departments.find(x=>x.id===deptTgt); d.name=name; d.description=desc; }
+  else window.db.departments.push({id:'d'+Date.now(),name,description:desc});
+  saveDB(); closePanel('dept-panel'); renderTabBody(); toast('Department saved.','success');
+}
+function deleteDept(id){
+  if(!confirm('Delete this department?'))return;
+  window.db.departments=window.db.departments.filter(d=>d.id!==id);
+  saveDB(); renderTabBody(); toast('Department deleted.','warning');
+}
+
+// ── Accounts ────────────────────────────────────────────
+function buildAccounts(){
+  const rows=window.db.accounts.length
+    ?window.db.accounts.map(a=>`<tr>
+        <td>${esc(a.firstName)} ${esc(a.lastName)}</td>
+        <td>${esc(a.email)}</td>
+        <td><span class="role-badge ${a.role==='Admin'?'admin':'user'}">${a.role}</span></td>
+        <td><span class="sbadge ${a.verified?'verified':'unverified'}">${a.verified?'✔ Yes':'✗ No'}</span></td>
+        <td>
+          <button class="btn btn-outline btn-sm mr2" onclick="openAccForm('${esc(a.email)}')">Edit</button>
+          <button class="btn btn-warning btn-sm mr2" onclick="resetPW('${esc(a.email)}')">Reset PW</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteAcc('${esc(a.email)}')">Delete</button>
+        </td></tr>`).join('')
+    :`<tr class="erow"><td colspan="5">No accounts.</td></tr>`;
+  return`
+    <div class="sec-head"><h4>Accounts</h4>
+      <button class="btn btn-success btn-sm" onclick="openAccForm(null)">+ Add Account</button></div>
+    <div class="tbl-wrap"><div class="tbl-scroll">
+      <table class="ctbl"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Verified</th><th>Actions</th></tr></thead>
+      <tbody>${rows}</tbody></table></div></div>
+    <div class="form-panel" id="acc-panel">
+      <div class="fpanel-title" id="acc-ptitle">Add Account</div>
+      <div class="alert alert-danger" id="acc-err"></div>
+      <div class="frow2">
+        <div class="fmb"><label class="fl">First Name</label><input type="text" id="af-fn" class="fc"/></div>
+        <div class="fmb"><label class="fl">Last Name</label><input type="text" id="af-ln" class="fc"/></div>
+      </div>
+      <div class="frow2">
+        <div class="fmb"><label class="fl">Email</label><input type="email" id="af-email" class="fc"/></div>
+        <div class="fmb" id="af-pw-wrap"><label class="fl">Password</label><input type="password" id="af-pw" class="fc"/></div>
+      </div>
+      <div class="frow2">
+        <div class="fmb"><label class="fl">Role</label><select id="af-role" class="fc"><option>User</option><option>Admin</option></select></div>
+        <div class="fmb" style="display:flex;align-items:flex-end;padding-bottom:.15rem;">
+          <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.875rem;">
+            <input type="checkbox" id="af-ver" style="width:16px;height:16px;accent-color:#0d6efd;"/> Verified
+          </label>
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem;">
+        <button class="btn btn-primary" onclick="saveAcc()">Save</button>
+        <button class="btn btn-secondary" onclick="closePanel('acc-panel')">Cancel</button>
+      </div></div>`;
+}
+function openAccForm(email){
+  accTgt=email; openPanel('acc-panel'); halert('acc-err');
+  const pww=document.getElementById('af-pw-wrap'),eml=document.getElementById('af-email');
+  if(email){
+    const a=window.db.accounts.find(x=>x.email===email);
+    document.getElementById('acc-ptitle').textContent='Edit Account';
+    document.getElementById('af-fn').value=a.firstName;
+    document.getElementById('af-ln').value=a.lastName;
+    eml.value=a.email; eml.disabled=true;
+    document.getElementById('af-role').value=a.role;
+    document.getElementById('af-ver').checked=a.verified;
+    pww.style.display='none';
+  } else {
+    document.getElementById('acc-ptitle').textContent='Add Account';
+    ['af-fn','af-ln','af-pw'].forEach(x=>document.getElementById(x).value='');
+    eml.value=''; eml.disabled=false;
+    document.getElementById('af-role').value='User';
+    document.getElementById('af-ver').checked=false;
+    pww.style.display='';
+  }
+}
+function saveAcc(){
+  const fn=v('af-fn'),ln=v('af-ln'),email=document.getElementById('af-email').value.trim().toLowerCase(),
+        role=document.getElementById('af-role').value,ver=document.getElementById('af-ver').checked;
+  if(!fn||!ln||!email){salert('acc-err','danger','Name and email are required.');return;}
+  if(accTgt){
+    Object.assign(window.db.accounts.find(x=>x.email===accTgt),{firstName:fn,lastName:ln,role,verified:ver});
+  } else {
+    const pw=v('af-pw');
+    if(!pw||pw.length<6){salert('acc-err','danger','Password must be at least 6 characters.');return;}
+    if(window.db.accounts.find(a=>a.email===email)){salert('acc-err','danger','Email already exists.');return;}
+    window.db.accounts.push({id:'a'+Date.now(),firstName:fn,lastName:ln,email,password:pw,role,verified:ver});
+  }
+  saveDB(); closePanel('acc-panel'); renderTabBody(); toast('Account saved.','success');
+}
+function resetPW(email){
+  const pw=prompt('Enter new password (min 6 chars):');
+  if(!pw)return;
+  if(pw.length<6){toast('Password too short.','error');return;}
+  const a=window.db.accounts.find(x=>x.email===email);
+  if(a){a.password=pw;saveDB();toast('Password reset.','success');}
+}
+function deleteAcc(email){
+  if(currentUser?.email===email){toast('Cannot delete your own account.','error');return;}
+  if(!confirm('Delete this account?'))return;
+  window.db.accounts=window.db.accounts.filter(a=>a.email!==email);
+  saveDB(); renderTabBody(); toast('Account deleted.','warning');
+}
+
+// ── My Requests ─────────────────────────────────────────
+function buildMyReqs(){
+  const mine=window.db.requests.filter(r=>r.employeeEmail===currentUser.email);
+  const rows=mine.length
+    ?mine.map(r=>`<tr>
+        <td>${esc(r.date)}</td><td>${esc(r.type)}</td>
+        <td>${r.items.map(i=>`${esc(i.name)} ×${i.qty}`).join(', ')}</td>
+        <td><span class="sbadge ${r.status.toLowerCase()}">${r.status}</span></td>
+      </tr>`).join('')
+    :`<tr class="erow"><td colspan="4">You have no requests yet.</td></tr>`;
+  return`
+    <div class="sec-head"><h4>My Requests</h4>
+      <button class="btn btn-success btn-sm" onclick="openReqModal()">+ New Request</button></div>
+    <div class="tbl-wrap"><div class="tbl-scroll">
+      <table class="ctbl"><thead><tr><th>Date</th><th>Type</th><th>Items</th><th>Status</th></tr></thead>
+      <tbody>${rows}</tbody></table></div></div>`;
+}
+
+// ── All Requests ─────────────────────────────────────────
+function buildAllReqs(){
+  const rows=window.db.requests.length
+    ?window.db.requests.map(r=>`<tr>
+        <td>${esc(r.employeeEmail)}</td><td>${esc(r.date)}</td>
+        <td>${esc(r.type)}</td>
+        <td>${r.items.map(i=>`${esc(i.name)} ×${i.qty}`).join(', ')}</td>
+        <td><span class="sbadge ${r.status.toLowerCase()}">${r.status}</span></td>
+        <td><button class="btn btn-outline btn-sm" onclick="openRstat('${r.id}','${r.status}')">Update</button></td>
+      </tr>`).join('')
+    :`<tr class="erow"><td colspan="6">No requests submitted yet.</td></tr>`;
+  return`
+    <div class="sec-head"><h4>All Requests</h4></div>
+    <div class="tbl-wrap"><div class="tbl-scroll">
+      <table class="ctbl"><thead><tr><th>User</th><th>Date</th><th>Type</th><th>Items</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>${rows}</tbody></table></div></div>`;
+}
+function openRstat(id,status){
+  rstatTgt=id;
+  document.getElementById('rstat-id').textContent=id;
+  document.getElementById('rstat-val').value=status;
+  openModal('modal-rstat');
+}
+function saveRstat(){
+  const r=window.db.requests.find(x=>x.id===rstatTgt);
+  if(r){r.status=document.getElementById('rstat-val').value;saveDB();}
+  closeModal('modal-rstat'); renderTabBody(); toast('Status updated.','success');
+}
+
+// ── Request Modal ───────────────────────────────────────
+function openReqModal(){
+  document.getElementById('req-items-wrap').innerHTML='';
+  halert('req-err'); addReqItem(); openModal('modal-request');
+}
+function addReqItem(name='',qty=1){
+  const wrap=document.getElementById('req-items-wrap');
+  const row=document.createElement('div'); row.className='req-row';
+  row.innerHTML=`<input type="text" class="fc ri-name" placeholder="Item name" value="${esc(name)}"/>
+    <input type="number" class="fc ri-qty" min="1" value="${qty}"/>
+    <button class="req-rm" onclick="this.closest('.req-row').remove()">×</button>`;
+  wrap.appendChild(row);
+}
+function submitRequest(){
+  const type=document.getElementById('req-type').value, items=[];
+  document.querySelectorAll('.req-row').forEach(r=>{
+    const name=r.querySelector('.ri-name').value.trim();
+    const qty=parseInt(r.querySelector('.ri-qty').value)||1;
+    if(name) items.push({name,qty});
+  });
+  if(!items.length){salert('req-err','danger','Add at least one item.');return;}
+  window.db.requests.push({id:'r'+Date.now(),type,items,status:'Pending',date:new Date().toLocaleDateString(),employeeEmail:currentUser.email});
+  saveDB(); closeModal('modal-request');
+  if(activeTab==='requests') renderTabBody();
+  toast('Request submitted!','success');
+}
+
+// ── Auth flows ──────────────────────────────────────────
+function doRegister(){
+  const fn=v('reg-fn'),ln=v('reg-ln'),email=document.getElementById('reg-email').value.trim().toLowerCase(),pw=v('reg-pw');
+  if(!fn||!ln||!email||!pw){salert('reg-err','danger','All fields are required.');return;}
+  if(pw.length<6){salert('reg-err','danger','Password must be at least 6 characters.');return;}
+  if(window.db.accounts.find(a=>a.email===email)){salert('reg-err','danger','Email already registered.');return;}
+  window.db.accounts.push({id:'a'+Date.now(),firstName:fn,lastName:ln,email,password:pw,role:'User',verified:false});
+  saveDB();
+  localStorage.setItem('pending_verify',email);
+  closeModal('modal-register');
+  document.getElementById('verify-lbl').textContent=email;
+  ['reg-fn','reg-ln','reg-email','reg-pw'].forEach(id=>document.getElementById(id).value='');
+  halert('reg-err');
+  openModal('modal-verify');
+}
+function doVerify(){
+  const email=localStorage.getItem('pending_verify');
+  if(!email){toast('No pending verification.','warning');return;}
+  const acc=window.db.accounts.find(a=>a.email===email);
+  if(acc){acc.verified=true;saveDB();}
+  localStorage.removeItem('pending_verify');
+  closeModal('modal-verify');
+  if(acc){localStorage.setItem('auth_token',acc.email);setAuth(true,acc);toast(`✅ Verified! Welcome, ${acc.firstName}!`,'success');}
+}
+
+// ── Login (calls backend) ───────────────────────────────
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim().toLowerCase();
+  const pw=document.getElementById('login-pw').value;
+  const errEl='login-err';
+  halert(errEl);
+
+  try{
+    const response=await fetch('http://localhost:3000/api/login',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:email,password:pw})
+    });
+
+    const data=await response.json();
+
+    if(response.ok){
+      // Save token to sessionStorage
+      sessionStorage.setItem('authToken',data.token);
+
+      // Find the full user object from local DB
+      const user=window.db.accounts.find(a=>a.email===email);
+
+      if(!user){
+        // User exists on backend but not in local DB — add them on the fly
+        const newUser={
+          id:'a'+Date.now(),
+          firstName:email.split('@')[0],
+          lastName:'',
+          email:email,
+          password:pw,
+          role:data.role==='admin'?'Admin':'User',
+          verified:true
+        };
+        window.db.accounts.push(newUser);
+        saveDB();
+        sessionStorage.setItem('currentUser',JSON.stringify(newUser));
+        setAuth(true,newUser);
+      } else {
+        sessionStorage.setItem('currentUser',JSON.stringify(user));
+        setAuth(true,user);
+      }
+
+      closeModal('modal-login');
+      toast(`Welcome back, ${currentUser.firstName}!`,'success');
+    } else {
+      salert(errEl,'danger',data.message||'Invalid email or password.');
+    }
+  } catch(err){
+    salert(errEl,'danger','Error: Could not connect to the backend server. Make sure node server.js is running.');
+  }
+}
+
+function doLogout(){
+  closeDD();
+  localStorage.removeItem('auth_token');
+  sessionStorage.removeItem('authToken');
+  sessionStorage.removeItem('currentUser');
+  setAuth(false);
+  toast('Logged out.','info');
+}
+
+// ── Modal helpers ───────────────────────────────────────
+function openModal(id){ document.getElementById(id).classList.add('show'); document.body.style.overflow='hidden'; }
+function closeModal(id){
+  document.getElementById(id).classList.remove('show');
+  if(!document.querySelector('.modal-backdrop.show')) document.body.style.overflow='';
+}
+document.querySelectorAll('.modal-backdrop').forEach(el=>{
+  el.addEventListener('click',e=>{ if(e.target===el&&el.id!=='modal-verify') closeModal(el.id); });
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){ const o=document.querySelector('.modal-backdrop.show'); if(o&&o.id!=='modal-verify') closeModal(o.id); }
+});
+document.getElementById('modal-login').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+document.getElementById('modal-register').addEventListener('keydown',e=>{ if(e.key==='Enter') doRegister(); });
+
+// ── Panel helpers ───────────────────────────────────────
+function openPanel(id){
+  const p=document.getElementById(id);
+  p.classList.add('open');
+  p.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closePanel(id){ document.getElementById(id).classList.remove('open'); }
+
+// ── Alert helpers ───────────────────────────────────────
+function salert(id,type,msg){
+  const el=document.getElementById(id); if(!el)return;
+  el.className=`alert alert-${type} show`; el.style.display='block'; el.textContent=msg;
+}
+function halert(id){ const el=document.getElementById(id); if(el){el.className='alert';el.style.display='none';} }
+
+// ── Toast ───────────────────────────────────────────────
+function toast(msg,type='info'){
+  const w=document.getElementById('toasts');
+  const d=document.createElement('div'); d.className=`titem ${type}`; d.textContent=msg;
+  w.appendChild(d);
+  setTimeout(()=>d.style.opacity='0',3000);
+  setTimeout(()=>d.remove(),3400);
+}
+
+// ── Utils ───────────────────────────────────────────────
+function v(id){ return document.getElementById(id).value.trim(); }
+function esc(s=''){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── Init ────────────────────────────────────────────────
+loadDB(); restoreSession(); renderNav();
+</script>
+</body>
+</html>

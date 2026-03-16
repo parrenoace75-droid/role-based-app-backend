@@ -1,0 +1,27 @@
+/* Page routing */
+.page { display: none; }
+.page.active { display: block; }
+
+/* Auth-based visibility */
+body.not-authenticated .role-logged-in { display: none !important; }
+body.authenticated .role-logged-out { display: none !important; }
+
+/* Role-based visibility */
+.role-admin { display: none !important; }
+body.is-admin .role-admin { display: block !important; }
+
+/* Navbar admin items stay inline when is-admin */
+body.is-admin .navbar .role-admin { display: inline-block !important; }
+body.is-admin .dropdown-menu .role-admin { display: block !important; }
+
+/* General polish */
+main { min-height: 80vh; }
+.navbar-brand { font-weight: 600; }
+
+.badge-pending   { background-color: #ffc107; color: #000; }
+.badge-approved  { background-color: #198754; color: #fff; }
+.badge-rejected  { background-color: #dc3545; color: #fff; }
+
+.req-item-row { display: flex; gap: 8px; margin-bottom: 6px; align-items: center; }
+.req-item-row input[type="text"] { flex: 2; }
+.req-item-row input[type="number"] { flex: 0 0 70px; }
